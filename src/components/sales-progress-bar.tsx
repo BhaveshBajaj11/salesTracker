@@ -31,7 +31,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
   return (
     <TooltipProvider>
       <div className="w-full px-4">
-        <div className="relative h-10 w-full rounded-full bg-muted mt-10">
+        <div className="relative h-10 w-full rounded-full bg-muted mt-10 border-2 border-gray-200">
           {/* Progress Fill */}
           <div
             className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
