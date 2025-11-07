@@ -62,8 +62,7 @@ export default function SalesProgressDashboard() {
   const [lang, setLang] = useState<Locale>(locales.ta);
 
   const salesTarget = useMemo(() => {
-    const greenMin = stageRanges.Green.min;
-    return greenMin * 1.1; // 10% padding
+    return stageRanges.Yellow.min;
   }, [stageRanges]);
   
   const incentiveDetails: IncentiveDetails = useMemo(() => getStageForSales(currentSales, stageRanges), [currentSales, stageRanges]);
