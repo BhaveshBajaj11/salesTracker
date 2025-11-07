@@ -4,7 +4,7 @@
 import type { StageRanges } from '@/lib/types';
 import { formatCurrency, getProgress, getStageForSales } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, MapPin } from 'lucide-react';
 
 type SalesProgressBarProps = {
   currentSales: number;
@@ -27,7 +27,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
     { value: ranges.Red.max, label: 'Red End' },
     { value: ranges.Blue.max, label: 'Blue End' },
     { value: ranges.Yellow.max, label: 'Yellow End' },
-  ].filter(m => m.value !== null && m.value < salesTarget && m.value > currentSales);
+  ].filter(m => m.value !== null && m.value > currentSales);
 
   return (
     <TooltipProvider>
@@ -44,18 +44,20 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
                 if (marker.value === null) return null;
                 const markerPosition = getProgress(marker.value, salesTarget);
                 return (
-                    <div key={index} className="absolute top-0 h-full" style={{ left: `${markerPosition}%` }}>
+                    <div key={index} className="absolute top-0 h-full -translate-y-1/2" style={{ left: `${markerPosition}%`, top: '50%' }}>
                         <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
-                                <div className="h-full w-1 bg-background/50" />
+                                <div className="relative -translate-x-1/2">
+                                  <MapPin className="h-10 w-10 text-primary" fill="hsl(var(--primary))" />
+                                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-bold text-primary-foreground">
+                                    {formatCurrency(marker.value)}
+                                  </span>
+                                </div>
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>{marker.label}: {formatCurrency(marker.value)}</p>
                             </TooltipContent>
                         </Tooltip>
-                         <div className="absolute bottom-full mb-1 -translate-x-1/2">
-                            <span className="text-xs font-semibold text-muted-foreground">{formatCurrency(marker.value)}</span>
-                        </div>
                     </div>
                 )
             })}
