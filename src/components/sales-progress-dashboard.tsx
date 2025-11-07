@@ -42,9 +42,9 @@ export default function SalesProgressDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [currentSales, setCurrentSales] = useState(() => getSalesFromParams(searchParams));
-  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(searchParams)));
-  const [userName, setUserName] = useState(() => getUserNameFromParams(searchParams));
+  const [currentSales, setCurrentSales] = useState(0);
+  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(new URLSearchParams())));
+  const [userName, setUserName] = useState('User');
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
