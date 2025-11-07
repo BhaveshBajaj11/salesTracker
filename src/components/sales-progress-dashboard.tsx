@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useTransition, useMemo } from 'react';
 import { useFormState } from 'react-dom';
-import { BrainCircuit, Copy, DollarSign, Share2, Target, TrendingUp } from 'lucide-react';
+import { BrainCircuit, Copy, Share2, Target, TrendingUp, IndianRupee } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,7 +87,7 @@ export default function SalesProgressDashboard() {
         <CardContent className="space-y-8">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <label htmlFor="current-sales" className="flex items-center gap-2 text-lg font-medium whitespace-nowrap">
-              <DollarSign className="w-5 h-5" />
+              <IndianRupee className="w-5 h-5" />
               Current Sales
             </label>
             <Input
