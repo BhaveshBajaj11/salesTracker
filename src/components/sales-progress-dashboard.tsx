@@ -11,6 +11,7 @@ import { parseStageRanges, getStageForSales, formatCurrency } from '@/lib/utils'
 import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import { INCENTIVES } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
+import { locales, type Locale } from '@/lib/locales';
 
 const buildRangesString = (params: URLSearchParams): string => {
   const blueMin = parseInt(params.get('Blue') || "1300", 10);
@@ -38,6 +39,14 @@ const getUserNameFromParams = (params: URLSearchParams): string | null => {
   return params.get('Name');
 };
 
+const getLangFromParams = (params: URLSearchParams) => {
+  const lang = params.get('lang');
+  if (lang === 'en') {
+    return locales.en;
+  }
+  return locales.ta;
+};
+
 export default function SalesProgressDashboard() {
   const { toast } = useToast();
   const router = useRouter();
@@ -50,6 +59,7 @@ export default function SalesProgressDashboard() {
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isDebug, setIsDebug] = useState(false);
+  const [lang, setLang] = useState<Locale>(locales.ta);
 
   const salesTarget = useMemo(() => {
     const greenMin = stageRanges.Green.min;
@@ -100,6 +110,7 @@ export default function SalesProgressDashboard() {
     setUserName(getUserNameFromParams(params));
     setCurrentSales(getSalesFromParams(params));
     setIsDebug(params.get('debug') === 'true');
+    setLang(getLangFromParams(params));
   }, [searchParams]);
 
   const handleSalesChange = (newSales: number) => {
@@ -111,7 +122,7 @@ export default function SalesProgressDashboard() {
 
   const tipContent = useMemo(() => {
     if (incentiveDetails.stage === 'Green') {
-      return 'Great work! Continue to increase your incentive.';
+      return lang.greatWork;
     }
 
     let nextStage: Stage;
@@ -132,24 +143,29 @@ export default function SalesProgressDashboard() {
     if (difference <= 0) return '';
     
     const nextIncentive = INCENTIVES[nextStage];
-    return `You need ${formatCurrency(difference, 0)} more to reach the ${nextIncentive.toFixed(2)}x multiple.`;
-  }, [currentSales, stageRanges, incentiveDetails.stage]);
+
+    if (lang === locales.ta) {
+      return `${lang.tip_prefix} ${formatCurrency(difference, 0)} ${lang.tip_suffix_part1} ${nextIncentive.toFixed(2)}${lang.tip_suffix_part2}`;
+    }
+    return `${lang.tip_prefix} ${formatCurrency(difference, 0)} ${lang.tip_suffix_part1} ${nextIncentive.toFixed(2)}${lang.tip_suffix_part2}`;
+
+  }, [currentSales, stageRanges, incentiveDetails.stage, lang]);
   
   return (
     <>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <Card className="w-full max-w-md border-0 shadow-none">
         <CardHeader className={`text-center ${incentiveDetails.colorClass} text-primary-foreground rounded-t-lg py-4 transition-colors duration-500`}>
-          <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
+          <CardTitle className="text-2xl font-bold">{lang.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
           <div className="text-center">
-            <p className="text-lg pb-6">Hi{userName ? ` ${userName}` : ''}</p>
+            <p className="text-lg pb-6">{lang.greeting}{userName ? ` ${userName}` : ''}</p>
           </div>
           
           {isDebug && (
             <div className="pb-4">
-               <label htmlFor="current-sales" className="sr-only">Current Sales</label>
+               <label htmlFor="current-sales" className="sr-only">{lang.enterYourSales}</label>
                <Input
                 id="current-sales"
                 type="number"
@@ -157,23 +173,23 @@ export default function SalesProgressDashboard() {
                 onChange={(e) => handleSalesChange(Number(e.target.value))}
                 className="text-lg font-semibold text-center"
                 aria-label="Current Sales Input"
-                placeholder="Enter your sales"
+                placeholder={lang.enterYourSales}
               />
             </div>
           )}
 
-          <SalesProgressBar currentSales={currentSales} salesTarget={salesTarget} ranges={stageRanges} />
+          <SalesProgressBar currentSales={currentSales} salesTarget={salesTarget} ranges={stageRanges} lang={lang} />
           
           <div className="text-center space-y-4 pt-8">
               {incentiveDetails.stage === 'Green' ? (
                   <>
-                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(stageRanges.Yellow.min)}</span></p>
-                      <p>Current Achievement: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
+                      <p>{lang.yourTarget}: <span className="font-bold">{formatCurrency(stageRanges.Yellow.min)}</span></p>
+                      <p>{lang.currentAchievement}: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               ) : (
                   <>
-                      <p>Target Sales: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
-                      <p>Sales: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
+                      <p>{lang.targetSales}: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
+                      <p>{lang.sales}: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               )}
 
@@ -181,7 +197,7 @@ export default function SalesProgressDashboard() {
                   <p className={`font-bold text-4xl`} style={{color: incentiveDetails.colorHex}}>
                       {incentiveDetails.incentive.toFixed(2)}x
                   </p>
-                  <p className="text-muted-foreground ml-2">Multiple</p>
+                  <p className="text-muted-foreground ml-2">{lang.multiple}</p>
               </div>
 
               {tipContent && (

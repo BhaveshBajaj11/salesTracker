@@ -3,6 +3,7 @@
 import type { StageRanges } from '@/lib/types';
 import { formatCurrency, getProgress, getStageForSales } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import type { Locale } from '@/lib/locales';
 
 const stageDetails: { [key: string]: { color: string; markerColor: string; } } = {
   Red: { color: 'bg-red-500', markerColor: '#ef4444' },
@@ -15,10 +16,11 @@ type SalesProgressBarProps = {
     currentSales: number;
     salesTarget: number;
     ranges: StageRanges;
+    lang: Locale;
 };
 
 
-export default function SalesProgressBar({ currentSales, salesTarget, ranges }: SalesProgressBarProps) {
+export default function SalesProgressBar({ currentSales, salesTarget, ranges, lang }: SalesProgressBarProps) {
   const progress = getProgress(currentSales, salesTarget);
   const incentiveDetails = getStageForSales(currentSales, ranges);
 
@@ -88,7 +90,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Your current sales</p>
+              <p>{lang.yourCurrentSales}</p>
             </TooltipContent>
           </Tooltip>
         </div>
