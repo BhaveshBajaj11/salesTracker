@@ -31,7 +31,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
   return (
     <TooltipProvider>
       <div className="w-full px-4">
-        <div className="relative h-6 w-full rounded-full bg-muted mt-10">
+        <div className="relative h-10 w-full rounded-full bg-muted mt-10">
           {/* Progress Fill */}
           <div
             className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
@@ -40,7 +40,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
 
           {/* Stage Markers */}
           {allMarkers.map((marker, index) => {
-            if (marker.value === null) return null;
+            if (marker.value === null || currentSales >= marker.value) return null;
             const markerPosition = getProgress(marker.value, salesTarget);
             const stageDetail = stageDetails[marker.stage];
             return (
