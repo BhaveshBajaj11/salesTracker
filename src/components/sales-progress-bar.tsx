@@ -43,7 +43,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               return (
                 <div
                   key={index}
-                  className="absolute bottom-0 -translate-x-1/2"
+                  className="absolute bottom-full -translate-x-1/2 mb-2"
                   style={{ left: `${markerPosition}%` }}
                 >
                   <div className="flex flex-col items-center">
@@ -81,7 +81,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               >
                 <div className="flex flex-col items-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 24L24 12H0L12 24Z" />
+                    <path d="M12 0L0 12h24L12 0Z" />
                   </svg>
                   <span className="text-xs font-bold text-primary mt-1">{formatCurrency(currentSales, 0)}</span>
                 </div>
