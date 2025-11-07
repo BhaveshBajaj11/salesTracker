@@ -52,7 +52,7 @@ export default function SalesProgressDashboard() {
     <>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <Card className="w-full max-w-md border-0 shadow-none">
-        <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-4">
+        <CardHeader className={`text-center ${incentiveDetails.colorClass} text-primary-foreground rounded-t-lg py-4 transition-colors duration-500`}>
           <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
