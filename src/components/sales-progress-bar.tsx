@@ -37,13 +37,14 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           {/* Progress Fill */}
           <div
             className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
-            style={{ width: `${progress}%` }}
+            style={{ width: `${progress > 100 ? 100 : progress}%` }}
           />
 
           {/* Stage Markers */}
           {allMarkers.map((marker, index) => {
             if (marker.value === null || currentSales >= marker.value) return null;
             const markerPosition = getProgress(marker.value, salesTarget);
+            if (markerPosition > 100) return null;
             const stageDetail = stageDetails[marker.stage];
             return (
               <div
@@ -52,7 +53,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
                 style={{ left: `${markerPosition}%`, top: '50%' }}
               >
                 <div className="flex flex-col items-center">
-                  <span className="text-xs font-semibold -mt-5">{marker.value}</span>
+                  <span className="text-xs font-semibold -mt-5">{formatCurrency(marker.value, 0)}</span>
                   <div 
                     className="w-5 h-5 rounded-full border-2" 
                     style={{ borderColor: stageDetail.markerColor, backgroundColor: 'white' }}
@@ -72,7 +73,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
             <TooltipTrigger asChild>
               <div
                 className="absolute top-0 -translate-x-1/2 transition-all duration-500"
-                style={{ left: `${progress}%` }}
+                style={{ left: `${progress > 100 ? 100 : progress}%` }}
               >
                 <div className="flex flex-col items-center">
                    <div className="w-5 h-5 rounded-full" style={{backgroundColor: '#3b82f6' /* Blue as per design */}} />
