@@ -102,7 +102,7 @@ export default function SalesProgressDashboard() {
           </div>
           
           {isDebug && (
-            <div className="">
+            <div className="pb-4">
                <label htmlFor="current-sales" className="sr-only">Current Sales</label>
                <Input
                 id="current-sales"
