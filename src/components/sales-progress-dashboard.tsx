@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Confetti from 'react-confetti';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,8 +15,16 @@ const initialRangesString = '{"Red": "0-1299", "Blue": "1300-1499", "Yellow": "1
 
 export default function SalesProgressDashboard() {
   const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [currentSales, setCurrentSales] = useState(0);
+  const getSalesFromParams = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    const sales = params.get('sales');
+    return sales ? Number(sales) : 0;
+  };
+
+  const [currentSales, setCurrentSales] = useState(getSalesFromParams);
   const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(initialRangesString));
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
@@ -45,8 +54,13 @@ export default function SalesProgressDashboard() {
             width: window.innerWidth,
             height: window.innerHeight,
         });
+        const params = new URLSearchParams(window.location.search);
+        if (String(currentSales) !== params.get('sales')) {
+            params.set('sales', String(currentSales));
+            router.replace(`?${params.toString()}`);
+        }
     }
-  }, [currentSales, handleConfetti]);
+  }, [currentSales, handleConfetti, router]);
 
   const tipContent = useMemo(() => {
     if (incentiveDetails.stage === 'Green') {
