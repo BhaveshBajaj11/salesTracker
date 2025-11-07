@@ -2,7 +2,7 @@
 'use client';
 
 import type { StageRanges } from '@/lib/types';
-import { formatCurrency, getProgress } from '@/lib/utils';
+import { formatCurrency, getProgress, getStageForSales } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TrendingUp } from 'lucide-react';
 
@@ -21,43 +21,42 @@ const stageColors: { [key: string]: string } = {
 
 export default function SalesProgressBar({ currentSales, salesTarget, ranges }: SalesProgressBarProps) {
   const progress = getProgress(currentSales, salesTarget);
+  const incentiveDetails = getStageForSales(currentSales, ranges);
 
-  const stageSegments = Object.entries(ranges).map(([stage, range]) => {
-    const min = range.min;
-    const max = range.max ?? salesTarget;
-    let width = 0;
-    if (salesTarget > 0) {
-        width = ((max - min) / salesTarget) * 100;
-    }
-    if (stage === 'Green' && salesTarget > min) {
-        width = ((salesTarget - min) / salesTarget) * 100;
-    }
-    if (width < 0) width = 0;
-
-    const label = `${formatCurrency(min)} - ${range.max ? formatCurrency(range.max) : '+'}`;
-
-    return { stage, width, label, color: stageColors[stage] };
-  });
+  const markers = [
+    { value: ranges.Red.max, label: 'Red End' },
+    { value: ranges.Blue.max, label: 'Blue End' },
+    { value: ranges.Yellow.max, label: 'Yellow End' },
+  ].filter(m => m.value !== null && m.value < salesTarget);
 
   return (
     <TooltipProvider>
       <div className="w-full">
-        <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden flex">
-          {stageSegments.map(segment => (
-             segment.width > 0 && (
-              <Tooltip key={segment.stage} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <div
-                    className={`${segment.color} h-full transition-all duration-500`}
-                    style={{ width: `${segment.width}%` }}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="font-semibold">{segment.stage}: {segment.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            )
-          ))}
+        <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden">
+            {/* Progress Fill */}
+            <div
+                className={`h-full transition-all duration-500 ${incentiveDetails.color}`}
+                style={{ width: `${progress}%` }}
+            />
+            
+            {/* Stage Markers */}
+            {markers.map((marker, index) => {
+                if (marker.value === null) return null;
+                const markerPosition = getProgress(marker.value, salesTarget);
+                return (
+                    <Tooltip key={index} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                            <div
+                                className="absolute top-0 h-full w-1 bg-background/50"
+                                style={{ left: `${markerPosition}%` }}
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{marker.label}: {formatCurrency(marker.value)}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )
+            })}
         </div>
 
         <div className="relative mt-2 h-6">
