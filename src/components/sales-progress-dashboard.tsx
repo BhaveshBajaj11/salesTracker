@@ -98,7 +98,7 @@ export default function SalesProgressDashboard() {
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
           <div className="text-center">
-            <p className="text-lg pb-4">Hi &lt;User Name&gt;</p>
+            <p className="text-lg pb-6">Hi &lt;User Name&gt;</p>
           </div>
           
           {isDebug && (
