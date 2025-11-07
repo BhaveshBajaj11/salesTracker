@@ -34,7 +34,7 @@ const getSalesFromParams = (params: URLSearchParams) => {
 };
 
 const getUserNameFromParams = (params: URLSearchParams) => {
-  return params.get('Name') || '<User Name>';
+  return params.get('Name') || 'User';
 };
 
 export default function SalesProgressDashboard() {
