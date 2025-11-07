@@ -14,6 +14,8 @@ export function parseStageRanges(jsonString: string): StageRanges {
   for (const stage of ['Red', 'Blue', 'Yellow', 'Green']) {
     const stageKey = stage as Stage;
     const rangeStr = parsed[stageKey];
+    if (!rangeStr) continue;
+    
     if (rangeStr.includes('>=')) {
       ranges[stageKey] = {
         min: parseInt(rangeStr.replace('>=', '').trim(), 10),
@@ -28,13 +30,13 @@ export function parseStageRanges(jsonString: string): StageRanges {
 }
 
 export function getStageForSales(sales: number, ranges: StageRanges): IncentiveDetails {
-  if (sales >= ranges.Green.min) {
+  if (ranges.Green && sales >= ranges.Green.min) {
     return { stage: 'Green', incentive: INCENTIVES.Green, colorClass: STAGE_COLORS.Green.bg, colorHex: STAGE_COLORS.Green.hex };
   }
-  if (sales >= ranges.Yellow.min && sales <= (ranges.Yellow.max ?? Infinity)) {
+  if (ranges.Yellow && sales >= ranges.Yellow.min && sales <= (ranges.Yellow.max ?? Infinity)) {
     return { stage: 'Yellow', incentive: INCENTIVES.Yellow, colorClass: STAGE_COLORS.Yellow.bg, colorHex: STAGE_COLORS.Yellow.hex };
   }
-  if (sales >= ranges.Blue.min && sales <= (ranges.Blue.max ?? Infinity)) {
+  if (ranges.Blue && sales >= ranges.Blue.min && sales <= (ranges.Blue.max ?? Infinity)) {
     return { stage: 'Blue', incentive: INCENTIVES.Blue, colorClass: STAGE_COLORS.Blue.bg, colorHex: STAGE_COLORS.Blue.hex };
   }
   return { stage: 'Red', incentive: INCENTIVES.Red, colorClass: STAGE_COLORS.Red.bg, colorHex: STAGE_COLORS.Red.hex };

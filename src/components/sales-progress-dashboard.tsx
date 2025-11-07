@@ -11,7 +11,21 @@ import { parseStageRanges, getStageForSales, formatCurrency } from '@/lib/utils'
 import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
-const initialRangesString = '{"Red": "0-1299", "Blue": "1300-1499", "Yellow": "1500-1699", "Green": ">=1700"}';
+const buildInitialRangesString = (params: URLSearchParams): string => {
+  const blueRange = params.get('Blue') || "1300-1499";
+  const yellowRange = params.get('Yellow') || "1500-1699";
+  const greenRange = params.get('Green') || ">=1700";
+
+  const blueMin = parseInt(blueRange.split('-')[0], 10);
+  const redMax = blueMin > 0 ? blueMin - 1 : 0;
+  
+  return JSON.stringify({
+    Red: `0-${redMax}`,
+    Blue: blueRange,
+    Yellow: yellowRange,
+    Green: greenRange,
+  });
+};
 
 export default function SalesProgressDashboard() {
   const { toast } = useToast();
@@ -23,9 +37,15 @@ export default function SalesProgressDashboard() {
     const sales = params.get('sales');
     return sales ? Number(sales) : 0;
   };
+  
+  const getUserNameFromParams = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    return params.get('Name') || '<User Name>';
+  };
 
   const [currentSales, setCurrentSales] = useState(getSalesFromParams);
-  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(initialRangesString));
+  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(new URLSearchParams(searchParams.toString()))));
+  const [userName, setUserName] = useState(getUserNameFromParams);
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -55,12 +75,21 @@ export default function SalesProgressDashboard() {
             width: window.innerWidth,
             height: window.innerHeight,
         });
+
         const params = new URLSearchParams(window.location.search);
+        
+        // Update URL with current sales
         if (String(currentSales) !== params.get('sales')) {
             params.set('sales', String(currentSales));
             router.replace(`?${params.toString()}`);
         }
+
+        // Set debug mode
         setIsDebug(params.get('debug') === 'true');
+
+        // Set dynamic values from params
+        setStageRanges(parseStageRanges(buildInitialRangesString(params)));
+        setUserName(params.get('Name') || '<User Name>');
     }
   }, [currentSales, handleConfetti, router]);
 
@@ -98,7 +127,7 @@ export default function SalesProgressDashboard() {
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
           <div className="text-center">
-            <p className="text-lg pb-6">Hi &lt;User Name&gt;</p>
+            <p className="text-lg pb-6">Hi {userName}</p>
           </div>
           
           {isDebug && (
