@@ -33,8 +33,8 @@ const getSalesFromParams = (params: URLSearchParams) => {
   return sales ? Number(sales) : 0;
 };
 
-const getUserNameFromParams = (params: URLSearchParams) => {
-  return params.get('Name') || 'User';
+const getUserNameFromParams = (params: URLSearchParams): string | null => {
+  return params.get('Name');
 };
 
 export default function SalesProgressDashboard() {
@@ -44,7 +44,7 @@ export default function SalesProgressDashboard() {
 
   const [currentSales, setCurrentSales] = useState(0);
   const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildRangesString(new URLSearchParams())));
-  const [userName, setUserName] = useState('User');
+  const [userName, setUserName] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -147,7 +147,7 @@ export default function SalesProgressDashboard() {
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
           <div className="text-center">
-            <p className="text-lg pb-6">Hi {userName}</p>
+            <p className="text-lg pb-6">Hi{userName ? ` ${userName}` : ''}</p>
           </div>
           
           {isDebug && (
