@@ -32,8 +32,16 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
     <TooltipProvider>
       <div className="w-full">
         <div className="relative w-full mx-auto mt-10">
+          {/* Progress Bar */}
+          <div className="relative h-10 w-full rounded-full bg-muted border-2 border-gray-200">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
+              style={{ width: `${progress > 100 ? 100 : progress}%` }}
+            />
+          </div>
+
           {/* Stage Markers */}
-          <div className="relative h-8">
+          <div className="absolute top-0 left-0 w-full h-full">
             {allMarkers.map((marker, index) => {
               if (marker.value === null) return null;
               if (currentSales >= marker.value) return null;
@@ -43,8 +51,8 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               return (
                 <div
                   key={index}
-                  className="absolute bottom-full -translate-x-1/2 mb-2"
-                  style={{ left: `${markerPosition}%` }}
+                  className="absolute bottom-full -translate-x-1/2"
+                  style={{ left: `${markerPosition}%`, bottom: '2.5rem' }}
                 >
                   <div className="flex flex-col items-center">
                     <span className="text-xs font-semibold">{formatCurrency(marker.value, 0)}</span>
@@ -61,14 +69,6 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               );
             })}
           </div>
-
-          {/* Progress Bar */}
-          <div className="relative h-10 w-full rounded-full bg-muted border-2 border-gray-200">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
-              style={{ width: `${progress > 100 ? 100 : progress}%` }}
-            />
-          </div>
         </div>
 
 
@@ -81,7 +81,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               >
                 <div className="flex flex-col items-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0L0 12h24L12 0Z" />
+                    <path d="M12 24l12-12H0L12 24Z" />
                   </svg>
                   <span className="text-xs font-bold text-black mt-1">{formatCurrency(currentSales, 0)}</span>
                 </div>
