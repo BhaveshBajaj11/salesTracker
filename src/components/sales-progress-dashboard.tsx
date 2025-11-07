@@ -188,7 +188,7 @@ export default function SalesProgressDashboard() {
                   </>
               ) : (
                   <>
-                      <p>{lang.targetSales}: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
+                      <p>{lang.yourTarget}: <span className="font-bold">{formatCurrency(stageRanges.Yellow.min)}</span></p>
                       <p>{lang.sales}: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               )}
