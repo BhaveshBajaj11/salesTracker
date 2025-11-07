@@ -47,6 +47,31 @@ export default function SalesProgressDashboard() {
         });
     }
   }, [currentSales, handleConfetti]);
+
+  const tipContent = useMemo(() => {
+    if (incentiveDetails.stage === 'Green') {
+      return 'Great work! Continue to increase your incentive.';
+    }
+
+    let nextStage: Stage;
+    let nextTarget: number;
+
+    if (incentiveDetails.stage === 'Red') {
+      nextStage = 'Blue';
+      nextTarget = stageRanges.Blue.min;
+    } else if (incentiveDetails.stage === 'Blue') {
+      nextStage = 'Yellow';
+      nextTarget = stageRanges.Yellow.min;
+    } else { // Yellow
+      nextStage = 'Green';
+      nextTarget = stageRanges.Green.min;
+    }
+
+    const difference = nextTarget - currentSales;
+    if (difference <= 0) return '';
+    
+    return `You need ${formatCurrency(difference, 0)} more to reach the ${nextStage} slab.`;
+  }, [currentSales, stageRanges, incentiveDetails.stage]);
   
   return (
     <>
@@ -94,6 +119,12 @@ export default function SalesProgressDashboard() {
                   </p>
                   <p className="text-muted-foreground ml-2">Multiple</p>
               </div>
+
+              {tipContent && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium">{tipContent}</p>
+                </div>
+              )}
           </div>
         </CardContent>
       </Card>
