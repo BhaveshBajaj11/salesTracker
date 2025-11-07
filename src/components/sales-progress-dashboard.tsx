@@ -1,8 +1,6 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Copy, Share2 } from 'lucide-react';
 import Confetti from 'react-confetti';
 
 import { Button } from '@/components/ui/button';
@@ -46,24 +44,6 @@ export default function SalesProgressDashboard() {
         });
     }
   }, [currentSales, handleConfetti]);
-
-
-  const handleShare = () => {
-    const params = new URLSearchParams({
-      sales: currentSales.toString(),
-      target: salesTarget.toString(),
-      redMax: stageRanges.Red.max!.toString(),
-      blueMax: stageRanges.Blue.max!.toString(),
-      yellowMax: stageRanges.Yellow.max!.toString(),
-      greenMin: stageRanges.Green.min!.toString(),
-    });
-    const url = `${window.location.origin}/report?${params.toString()}`;
-    navigator.clipboard.writeText(url);
-    toast({
-      title: 'Link Copied!',
-      description: 'The report link is now on your clipboard.',
-    });
-  };
   
   return (
     <>
@@ -113,11 +93,6 @@ export default function SalesProgressDashboard() {
               </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 items-center justify-between p-4">
-            <Button onClick={handleShare} variant="outline" className="w-full">
-              <Share2 className="mr-2" /> Share Report <Copy className="ml-2 w-4 h-4" />
-            </Button>
-        </CardFooter>
       </Card>
     </>
   );
