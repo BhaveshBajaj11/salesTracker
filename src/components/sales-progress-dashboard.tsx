@@ -78,7 +78,7 @@ export default function SalesProgressDashboard() {
           <div className="text-center space-y-4 pt-8">
               {incentiveDetails.stage === 'Green' ? (
                   <>
-                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
+                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(stageRanges.Yellow.min)}</span></p>
                       <p>Current Achievement: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               ) : (
