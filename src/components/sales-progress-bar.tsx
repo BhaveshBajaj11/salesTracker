@@ -36,8 +36,8 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           <div className="relative h-8">
             {allMarkers.map((marker, index) => {
               if (marker.value === null) return null;
+              if (currentSales >= marker.value) return null;
               const markerPosition = getProgress(marker.value, salesTarget);
-              if (currentSales >= marker.value && marker.stage !== 'Green') return null;
               if (markerPosition > 100) return null;
               const stageDetail = stageDetails[marker.stage];
               return (
@@ -80,10 +80,10 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
                 style={{ left: `${progress > 100 ? 100 : progress}%` }}
               >
                 <div className="flex flex-col items-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 0L0 12h24L12 0Z" />
                   </svg>
-                  <span className="text-xs font-bold text-primary mt-1">{formatCurrency(currentSales, 0)}</span>
+                  <span className="text-xs font-bold text-black mt-1">{formatCurrency(currentSales, 0)}</span>
                 </div>
               </div>
             </TooltipTrigger>
