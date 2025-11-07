@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Confetti from 'react-confetti';
 
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { parseStageRanges, getStageForSales, formatCurrency } from '@/lib/utils';
 import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
+import { INCENTIVES } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
 const buildRangesString = (params: URLSearchParams): string => {
@@ -57,7 +58,7 @@ export default function SalesProgressDashboard() {
   
   const incentiveDetails: IncentiveDetails = useMemo(() => getStageForSales(currentSales, stageRanges), [currentSales, stageRanges]);
   
-  const handleConfetti = useCallback(() => {
+  const handleConfetti = () => {
       if (incentiveDetails.stage !== lastStage && lastStage !== null) {
           if (incentiveDetails.stage === 'Blue' || incentiveDetails.stage === 'Yellow' || incentiveDetails.stage === 'Green') {
               setShowConfetti(true);
@@ -65,11 +66,11 @@ export default function SalesProgressDashboard() {
           }
       }
       setLastStage(incentiveDetails.stage);
-  }, [incentiveDetails.stage, lastStage]);
+  };
 
   useEffect(() => {
     handleConfetti();
-  }, [incentiveDetails.stage, handleConfetti]);
+  }, [incentiveDetails.stage]);
   
   useEffect(() => {
     const handleResize = () => {
@@ -130,7 +131,8 @@ export default function SalesProgressDashboard() {
     const difference = nextTarget - currentSales;
     if (difference <= 0) return '';
     
-    return `You need ${formatCurrency(difference, 0)} more to reach the ${nextStage} slab.`;
+    const nextIncentive = INCENTIVES[nextStage];
+    return `You need ${formatCurrency(difference, 0)} more to reach the ${nextIncentive.toFixed(2)}x multiple.`;
   }, [currentSales, stageRanges, incentiveDetails.stage]);
   
   return (
