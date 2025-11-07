@@ -70,22 +70,30 @@ export default function SalesProgressDashboard() {
   useEffect(() => {
     handleConfetti();
   }, [incentiveDetails.stage, handleConfetti]);
-
+  
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-        setWindowSize({
-            width: window.innerWidth,
-            height: window.innerHeight,
-        });
+      const params = new URLSearchParams(searchParams.toString());
+      const sales = getSalesFromParams(params);
+      setCurrentSales(sales);
 
-        const params = new URLSearchParams(searchParams.toString());
-        
-        if (String(currentSales) !== params.get('sales')) {
-            params.set('sales', String(currentSales));
-            router.replace(`?${params.toString()}`, { scroll: false });
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      };
+
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial size
+      }
+      
+      return () => {
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('resize', handleResize);
         }
-    }
-  }, [currentSales, searchParams, router]);
+      }
+  }, [searchParams]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -94,6 +102,13 @@ export default function SalesProgressDashboard() {
     setCurrentSales(getSalesFromParams(params));
     setIsDebug(params.get('debug') === 'true');
   }, [searchParams]);
+
+  const handleSalesChange = (newSales: number) => {
+    setCurrentSales(newSales);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sales', String(newSales));
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   const tipContent = useMemo(() => {
     if (incentiveDetails.stage === 'Green') {
@@ -139,7 +154,7 @@ export default function SalesProgressDashboard() {
                 id="current-sales"
                 type="number"
                 value={currentSales}
-                onChange={(e) => setCurrentSales(Number(e.target.value))}
+                onChange={(e) => handleSalesChange(Number(e.target.value))}
                 className="text-lg font-semibold text-center"
                 aria-label="Current Sales Input"
                 placeholder="Enter your sales"
