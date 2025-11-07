@@ -32,10 +32,10 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
   return (
     <TooltipProvider>
       <div className="w-full">
-        <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden">
+        <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden mt-6">
             {/* Progress Fill */}
             <div
-                className={`h-full transition-all duration-500 ${incentiveDetails.color}`}
+                className={`h-full transition-all duration-500 ${stageColors[incentiveDetails.stage]}`}
                 style={{ width: `${progress}%` }}
             />
             
@@ -44,17 +44,19 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
                 if (marker.value === null) return null;
                 const markerPosition = getProgress(marker.value, salesTarget);
                 return (
-                    <Tooltip key={index} delayDuration={0}>
-                        <TooltipTrigger asChild>
-                            <div
-                                className="absolute top-0 h-full w-1 bg-background/50"
-                                style={{ left: `${markerPosition}%` }}
-                            />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{marker.label}: {formatCurrency(marker.value)}</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <div key={index} className="absolute top-0 h-full" style={{ left: `${markerPosition}%` }}>
+                        <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                                <div className="h-full w-1 bg-background/50" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{marker.label}: {formatCurrency(marker.value)}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                         <div className="absolute bottom-full mb-1 -translate-x-1/2">
+                            <span className="text-xs font-semibold text-muted-foreground">{formatCurrency(marker.value)}</span>
+                        </div>
+                    </div>
                 )
             })}
         </div>

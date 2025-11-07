@@ -16,7 +16,7 @@ export function parseStageRanges(jsonString: string): StageRanges {
     const rangeStr = parsed[stageKey];
     if (rangeStr.includes('>')) {
       ranges[stageKey] = {
-        min: parseInt(rangeStr.replace('>', '').trim(), 10) + 1,
+        min: parseInt(rangeStr.replace('>', '').trim(), 10),
         max: null,
       };
     } else {
