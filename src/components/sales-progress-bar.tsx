@@ -28,8 +28,6 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
     { value: ranges.Green.min, stage: 'Green' },
   ];
 
-  const targetLabelPosition = progress > 90 ? 'left-[90%]' : 'right-0';
-
   return (
     <TooltipProvider>
       <div className="w-full">
@@ -93,11 +91,6 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
               <p>Your current sales</p>
             </TooltipContent>
           </Tooltip>
-        </div>
-        
-        <div className="relative -mt-4 w-full mx-auto text-xs text-muted-foreground">
-            <span className="absolute left-0">{formatCurrency(0, 0)}</span>
-            <span className={`absolute ${targetLabelPosition}`}>{formatCurrency(salesTarget, 0)}</span>
         </div>
       </div>
     </TooltipProvider>
