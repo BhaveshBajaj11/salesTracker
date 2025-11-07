@@ -3,11 +3,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Confetti from 'react-confetti';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { parseStageRanges, getStageForSales, formatCurrency, getProgress } from '@/lib/utils';
+import { parseStageRanges, getStageForSales, formatCurrency } from '@/lib/utils';
 import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
@@ -17,12 +16,16 @@ export default function SalesProgressDashboard() {
   const { toast } = useToast();
 
   const [currentSales, setCurrentSales] = useState(0);
-  const [salesTarget, setSalesTarget] = useState(1500);
   const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(initialRangesString));
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
+  const salesTarget = useMemo(() => {
+    const greenMin = stageRanges.Green.min;
+    return greenMin * 1.1; // 10% padding
+  }, [stageRanges]);
+  
   const incentiveDetails: IncentiveDetails = useMemo(() => getStageForSales(currentSales, stageRanges), [currentSales, stageRanges]);
   
   const handleConfetti = useCallback(() => {
@@ -75,12 +78,12 @@ export default function SalesProgressDashboard() {
           <div className="text-center space-y-4 pt-8">
               {incentiveDetails.stage === 'Green' ? (
                   <>
-                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(salesTarget)}</span></p>
+                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
                       <p>Current Achievement: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               ) : (
                   <>
-                      <p>Target Sales: <span className="font-bold">{formatCurrency(salesTarget)}</span></p>
+                      <p>Target Sales: <span className="font-bold">{formatCurrency(stageRanges.Green.min)}</span></p>
                       <p>Sales: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
                   </>
               )}

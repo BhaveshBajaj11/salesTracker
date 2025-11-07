@@ -42,8 +42,10 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
 
           {/* Stage Markers */}
           {allMarkers.map((marker, index) => {
-            if (marker.value === null || currentSales >= marker.value) return null;
+            if (marker.value === null) return null;
             const markerPosition = getProgress(marker.value, salesTarget);
+            // Don't render markers for passed stages, but always render the Green marker
+            if (currentSales >= marker.value && marker.stage !== 'Green') return null;
             if (markerPosition > 100) return null;
             const stageDetail = stageDetails[marker.stage];
             return (
