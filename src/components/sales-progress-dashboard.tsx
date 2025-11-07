@@ -28,25 +28,23 @@ const buildInitialRangesString = (params: URLSearchParams): string => {
   });
 };
 
+const getSalesFromParams = (params: URLSearchParams) => {
+  const sales = params.get('sales');
+  return sales ? Number(sales) : 0;
+};
+
+const getUserNameFromParams = (params: URLSearchParams) => {
+  return params.get('Name') || '<User Name>';
+};
+
 export default function SalesProgressDashboard() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const getSalesFromParams = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    const sales = params.get('sales');
-    return sales ? Number(sales) : 0;
-  };
-  
-  const getUserNameFromParams = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    return params.get('Name') || '<User Name>';
-  };
-
-  const [currentSales, setCurrentSales] = useState(getSalesFromParams);
-  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(new URLSearchParams(searchParams.toString()))));
-  const [userName, setUserName] = useState(getUserNameFromParams);
+  const [currentSales, setCurrentSales] = useState(() => getSalesFromParams(searchParams));
+  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(searchParams)));
+  const [userName, setUserName] = useState(() => getUserNameFromParams(searchParams));
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -71,28 +69,32 @@ export default function SalesProgressDashboard() {
 
   useEffect(() => {
     handleConfetti();
+  }, [incentiveDetails.stage, handleConfetti]);
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
         setWindowSize({
             width: window.innerWidth,
             height: window.innerHeight,
         });
 
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchParams.toString());
         
         // Update URL with current sales
         if (String(currentSales) !== params.get('sales')) {
             params.set('sales', String(currentSales));
-            router.replace(`?${params.toString()}`);
+            router.replace(`?${params.toString()}`, { scroll: false });
         }
-
-        // Set debug mode
-        setIsDebug(params.get('debug') === 'true');
-
-        // Set dynamic values from params
-        setStageRanges(parseStageRanges(buildInitialRangesString(params)));
-        setUserName(params.get('Name') || '<User Name>');
     }
-  }, [currentSales, handleConfetti, router]);
+  }, [currentSales, searchParams, router]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    setStageRanges(parseStageRanges(buildInitialRangesString(params)));
+    setUserName(getUserNameFromParams(params));
+    setCurrentSales(getSalesFromParams(params));
+    setIsDebug(params.get('debug') === 'true');
+  }, [searchParams]);
 
   const tipContent = useMemo(() => {
     if (incentiveDetails.stage === 'Green') {
