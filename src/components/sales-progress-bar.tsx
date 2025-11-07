@@ -33,42 +33,46 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
   return (
     <TooltipProvider>
       <div className="w-full">
-        <div className="relative h-10 w-full mx-auto rounded-full bg-muted mt-10 border-2 border-gray-200">
-          {/* Progress Fill */}
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
-            style={{ width: `${progress > 100 ? 100 : progress}%` }}
-          />
-
+        <div className="relative w-full mx-auto mt-10">
           {/* Stage Markers */}
-          {allMarkers.map((marker, index) => {
-            if (marker.value === null) return null;
-            const markerPosition = getProgress(marker.value, salesTarget);
-            // Don't render markers for passed stages, but always render the Green marker
-            if (currentSales >= marker.value && marker.stage !== 'Green') return null;
-            if (markerPosition > 100) return null;
-            const stageDetail = stageDetails[marker.stage];
-            return (
-              <div
-                key={index}
-                className="absolute top-0 -translate-x-1/2"
-                style={{ left: `${markerPosition}%` }}
-              >
-                <div className="flex flex-col items-center">
-                  <span className="text-xs font-semibold -mt-5">{formatCurrency(marker.value, 0)}</span>
-                  <div 
-                    className="w-5 h-5 rounded-full border-2" 
-                    style={{ borderColor: stageDetail.markerColor, backgroundColor: 'white' }}
-                  />
-                  <div
-                    className="h-3 w-px"
-                    style={{ background: `repeating-linear-gradient(to bottom, ${stageDetail.markerColor}, ${stageDetail.markerColor} 2px, transparent 2px, transparent 4px)` }}
-                  />
+          <div className="relative h-8">
+            {allMarkers.map((marker, index) => {
+              if (marker.value === null) return null;
+              const markerPosition = getProgress(marker.value, salesTarget);
+              if (currentSales >= marker.value && marker.stage !== 'Green') return null;
+              if (markerPosition > 100) return null;
+              const stageDetail = stageDetails[marker.stage];
+              return (
+                <div
+                  key={index}
+                  className="absolute bottom-0 -translate-x-1/2"
+                  style={{ left: `${markerPosition}%` }}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs font-semibold">{formatCurrency(marker.value, 0)}</span>
+                    <div 
+                      className="w-5 h-5 rounded-full border-2 bg-white" 
+                      style={{ borderColor: stageDetail.markerColor }}
+                    />
+                    <div
+                      className="h-3 w-px"
+                      style={{ background: `repeating-linear-gradient(to bottom, ${stageDetail.markerColor}, ${stageDetail.markerColor} 2px, transparent 2px, transparent 4px)` }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="relative h-10 w-full rounded-full bg-muted border-2 border-gray-200">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
+              style={{ width: `${progress > 100 ? 100 : progress}%` }}
+            />
+          </div>
         </div>
+
 
         <div className="relative mt-1 h-6 w-full mx-auto">
           <Tooltip delayDuration={0}>
