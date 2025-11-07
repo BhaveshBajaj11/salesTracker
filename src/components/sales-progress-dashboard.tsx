@@ -72,27 +72,30 @@ export default function SalesProgressDashboard() {
   }, [incentiveDetails.stage, handleConfetti]);
   
   useEffect(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      const sales = getSalesFromParams(params);
-      setCurrentSales(sales);
+    const params = new URLSearchParams(searchParams.toString());
+    const sales = getSalesFromParams(params);
+    setCurrentSales(sales);
+    setUserName(getUserNameFromParams(params));
 
-      const handleResize = () => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         });
-      };
+      }
+    };
 
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      handleResize(); // Initial size
+    }
+    
+    return () => {
       if (typeof window !== 'undefined') {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Initial size
+        window.removeEventListener('resize', handleResize);
       }
-      
-      return () => {
-        if (typeof window !== 'undefined') {
-          window.removeEventListener('resize', handleResize);
-        }
-      }
+    }
   }, [searchParams]);
 
   useEffect(() => {
