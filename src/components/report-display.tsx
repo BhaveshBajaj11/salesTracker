@@ -2,16 +2,37 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import SalesProgressBar from '@/components/sales-progress-bar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import type { StageRanges, IncentiveDetails } from '@/lib/types';
 import { getStageForSales, formatCurrency, getProgress } from '@/lib/utils';
-import { TrendingUp } from 'lucide-react';
+import Confetti from 'react-confetti';
 
 export default function ReportDisplay() {
   const searchParams = useSearchParams();
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [lastStage, setLastStage] = useState<string | null>(null);
+
+  const salesData = useMemo(() => {
+    const sales = Number(searchParams.get('sales')) || 0;
+    const target = Number(searchParams.get('target')) || 1;
+    const redMax = Number(searchParams.get('redMax'));
+    const blueMax = Number(searchPa'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { useMemo, useEffect, useState, useCallback } from 'react';
+import SalesProgressBar from '@/components/sales-progress-bar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import type { StageRanges, IncentiveDetails } from '@/lib/types';
+import { getStageForSales, formatCurrency, getProgress } from '@/lib/utils';
+import Confetti from 'react-confetti';
+
+export default function ReportDisplay() {
+  const searchParams = useSearchParams();
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [lastStage, setLastStage] = useState<string | null>(null);
+  const [windowSize, setWindowSize] = useState<{width: number, height: number}>({width: 0, height: 0});
 
   const salesData = useMemo(() => {
     const sales = Number(searchParams.get('sales')) || 0;
@@ -34,10 +55,28 @@ export default function ReportDisplay() {
     return { sales, target, ranges, incentiveDetails, progressPercentage };
   }, [searchParams]);
 
+  const { sales, target, ranges, incentiveDetails, progressPercentage } = salesData;
+
+  const handleConfetti = useCallback(() => {
+    if (incentiveDetails.stage !== lastStage && lastStage !== null) {
+        if (incentiveDetails.stage === 'Blue' || incentiveDetails.stage === 'Yellow' || incentiveDetails.stage === 'Green') {
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 5000);
+        }
+    }
+    setLastStage(incentiveDetails.stage);
+  }, [incentiveDetails.stage, lastStage]);
+
+  useEffect(() => {
+    handleConfetti();
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+  }, [sales, handleConfetti]);
+
+
   if (!salesData.target) {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-2xl">
+            <Card className="w-full max-w-md border-0 shadow-none">
                 <CardHeader>
                     <CardTitle>Invalid Report Data</CardTitle>
                     <CardDescription>The provided link is missing required sales data.</CardDescription>
@@ -47,40 +86,42 @@ export default function ReportDisplay() {
     );
   }
 
-  const { sales, target, ranges, incentiveDetails, progressPercentage } = salesData;
-
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-2xl animate-in fade-in-50 duration-500">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl md:text-3xl">
-            <TrendingUp className="text-primary" /> Sales Performance Report
-          </CardTitle>
-          <CardDescription>A snapshot of sales progress as of {new Date().toLocaleDateString()}.</CardDescription>
+    <>
+      {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
+      <Card className="w-full max-w-md animate-in fade-in-50 duration-500 border-0 shadow-none">
+        <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-4">
+          <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-8">
-            <SalesProgressBar currentSales={sales} salesTarget={target} ranges={ranges} />
+        <CardContent className="space-y-6 pt-6 bg-card">
+          <div className="text-center">
+            <p className="text-lg">Hi &lt;User Name&gt;</p>
+          </div>
+          
+          <SalesProgressBar currentSales={sales} salesTarget={target} ranges={ranges} />
+          
+          <div className="text-center space-y-4 pt-4">
+              {incentiveDetails.stage === 'Green' ? (
+                  <>
+                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(target)}</span></p>
+                      <p>Current Achievement: <span className="font-bold">{formatCurrency(sales)}</span></p>
+                  </>
+              ) : (
+                  <>
+                      <p>Target Sales: <span className="font-bold">{formatCurrency(target)}</span></p>
+                      <p>Sales: <span className="font-bold">{formatCurrency(sales)}</span></p>
+                  </>
+              )}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center p-4 bg-muted/50 rounded-lg">
-                <div>
-                    <p className="text-sm text-muted-foreground">Current Sales</p>
-                    <p className="font-bold text-lg text-primary">{formatCurrency(sales)}</p>
-                </div>
-                <div>
-                    <p className="text-sm text-muted-foreground">Sales Target</p>
-                    <p className="font-bold text-lg">{formatCurrency(target)}</p>
-                </div>
-                 <div>
-                    <p className="text-sm text-muted-foreground">Stage</p>
-                    <Badge className={`${incentiveDetails.color} text-white`}>{incentiveDetails.stage}</Badge>
-                </div>
-                <div>
-                    <p className="text-sm text-muted-foreground">Incentive</p>
-                    <p className="font-bold text-lg text-accent">{incentiveDetails.incentive.toFixed(2)}%</p>
-                </div>
-            </div>
+              <div className="flex justify-center items-center">
+                  <p className={`font-bold text-3xl`} style={{color: incentiveDetails.colorHex}}>
+                      {incentiveDetails.incentive}x
+                  </p>
+                  <p className="text-muted-foreground ml-2">Multiple</p>
+              </div>
+          </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }

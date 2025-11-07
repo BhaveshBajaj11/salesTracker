@@ -1,29 +1,51 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Copy, Share2, TrendingUp, IndianRupee } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { Copy, Share2 } from 'lucide-react';
+import Confetti from 'react-confetti';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { parseStageRanges, getStageForSales, formatCurrency, getProgress } from '@/lib/utils';
-import type { StageRanges, IncentiveDetails } from '@/lib/types';
+import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
-const initialRangesString = '{"Red": "0-1000", "Blue": "1001-1500", "Yellow": "1501-2500", "Green": ">2500"}';
+const initialRangesString = '{"Red": "0-1299", "Blue": "1300-1499", "Yellow": "1500-1699", "Green": ">=1700"}';
 
 export default function SalesProgressDashboard() {
   const { toast } = useToast();
 
-  const [currentSales, setCurrentSales] = useState(1250);
-  const [salesTarget, setSalesTarget] = useState(4000);
+  const [currentSales, setCurrentSales] = useState(0);
+  const [salesTarget, setSalesTarget] = useState(1500);
   const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(initialRangesString));
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [lastStage, setLastStage] = useState<Stage | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const incentiveDetails: IncentiveDetails = useMemo(() => getStageForSales(currentSales, stageRanges), [currentSales, stageRanges]);
-  const progressPercentage = useMemo(() => getProgress(currentSales, salesTarget), [currentSales, salesTarget]);
+  
+  const handleConfetti = useCallback(() => {
+      if (incentiveDetails.stage !== lastStage && lastStage !== null) {
+          if (incentiveDetails.stage === 'Blue' || incentiveDetails.stage === 'Yellow' || incentiveDetails.stage === 'Green') {
+              setShowConfetti(true);
+              setTimeout(() => setShowConfetti(false), 5000); // Confetti for 5 seconds
+          }
+      }
+      setLastStage(incentiveDetails.stage);
+  }, [incentiveDetails.stage, lastStage]);
+
+  useEffect(() => {
+    handleConfetti();
+    if (typeof window !== 'undefined') {
+        setWindowSize({
+            width: window.innerWidth,
+            height: window.innerHeight,
+        });
+    }
+  }, [currentSales, handleConfetti]);
 
 
   const handleShare = () => {
@@ -33,7 +55,7 @@ export default function SalesProgressDashboard() {
       redMax: stageRanges.Red.max!.toString(),
       blueMax: stageRanges.Blue.max!.toString(),
       yellowMax: stageRanges.Yellow.max!.toString(),
-      greenMin: stageRanges.Green.min.toString(),
+      greenMin: stageRanges.Green.min!.toString(),
     });
     const url = `${window.location.origin}/report?${params.toString()}`;
     navigator.clipboard.writeText(url);
@@ -44,56 +66,59 @@ export default function SalesProgressDashboard() {
   };
   
   return (
-    <div className="grid grid-cols-1 gap-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="text-primary" />
-            Current Performance
-          </CardTitle>
-          <CardDescription>Track your current sales against your target.</CardDescription>
+    <>
+      {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
+      <Card className="w-full max-w-md border-0 shadow-none">
+        <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-4">
+          <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <label htmlFor="current-sales" className="flex items-center gap-2 text-lg font-medium whitespace-nowrap">
-              <IndianRupee className="w-5 h-5" />
-              Current Sales
-            </label>
-            <Input
+        <CardContent className="space-y-6 pt-6 bg-card">
+          <div className="text-center">
+            <p className="text-lg">Hi &lt;User Name&gt;</p>
+          </div>
+          
+          <div className="px-4">
+             <label htmlFor="current-sales" className="sr-only">Current Sales</label>
+             <Input
               id="current-sales"
               type="number"
               value={currentSales}
               onChange={(e) => setCurrentSales(Number(e.target.value))}
-              className="text-lg font-semibold max-w-xs"
+              className="text-lg font-semibold text-center"
               aria-label="Current Sales Input"
+              placeholder="Enter your sales"
             />
           </div>
+
           <SalesProgressBar currentSales={currentSales} salesTarget={salesTarget} ranges={stageRanges} />
+          
+          <div className="text-center space-y-4 pt-4">
+              {incentiveDetails.stage === 'Green' ? (
+                  <>
+                      <p>Your Target for the day: <span className="font-bold">{formatCurrency(salesTarget)}</span></p>
+                      <p>Current Achievement: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
+                  </>
+              ) : (
+                  <>
+                      <p>Target Sales: <span className="font-bold">{formatCurrency(salesTarget)}</span></p>
+                      <p>Sales: <span className="font-bold">{formatCurrency(currentSales)}</span></p>
+                  </>
+              )}
+
+              <div className="flex justify-center items-baseline">
+                  <p className={`font-bold text-4xl`} style={{color: incentiveDetails.colorHex}}>
+                      {incentiveDetails.incentive.toFixed(2)}x
+                  </p>
+                  <p className="text-muted-foreground ml-2">Multiple</p>
+              </div>
+          </div>
         </CardContent>
-        <CardFooter className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Stage</p>
-                <Badge className={`${incentiveDetails.color} text-white`}>{incentiveDetails.stage}</Badge>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Incentive</p>
-                <p className="font-bold text-accent text-lg">{incentiveDetails.incentive.toFixed(2)}%</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Target</p>
-                <p className="font-bold text-lg">{formatCurrency(salesTarget)}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Progress</p>
-                <p className="font-bold text-lg">{progressPercentage}%</p>
-              </div>
-            </div>
-            <Button onClick={handleShare} variant="outline">
+        <CardFooter className="flex flex-col gap-4 items-center justify-between p-4">
+            <Button onClick={handleShare} variant="outline" className="w-full">
               <Share2 className="mr-2" /> Share Report <Copy className="ml-2 w-4 h-4" />
             </Button>
         </CardFooter>
       </Card>
-    </div>
+    </>
   );
 }

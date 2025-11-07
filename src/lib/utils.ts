@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { Stage, StageRanges, IncentiveDetails } from "@/lib/types"
-import { INCENTIVES } from "@/lib/types"
+import { INCENTIVES, STAGE_COLORS } from "@/lib/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,9 +14,9 @@ export function parseStageRanges(jsonString: string): StageRanges {
   for (const stage of ['Red', 'Blue', 'Yellow', 'Green']) {
     const stageKey = stage as Stage;
     const rangeStr = parsed[stageKey];
-    if (rangeStr.includes('>')) {
+    if (rangeStr.includes('>=')) {
       ranges[stageKey] = {
-        min: parseInt(rangeStr.replace('>', '').trim(), 10),
+        min: parseInt(rangeStr.replace('>=', '').trim(), 10),
         max: null,
       };
     } else {
@@ -29,27 +29,28 @@ export function parseStageRanges(jsonString: string): StageRanges {
 
 export function getStageForSales(sales: number, ranges: StageRanges): IncentiveDetails {
   if (sales >= ranges.Green.min) {
-    return { stage: 'Green', incentive: INCENTIVES.Green, color: 'bg-green-500' };
+    return { stage: 'Green', incentive: INCENTIVES.Green, colorClass: STAGE_COLORS.Green.bg, colorHex: STAGE_COLORS.Green.hex };
   }
   if (sales >= ranges.Yellow.min && sales <= (ranges.Yellow.max ?? Infinity)) {
-    return { stage: 'Yellow', incentive: INCENTIVES.Yellow, color: 'bg-yellow-500' };
+    return { stage: 'Yellow', incentive: INCENTIVES.Yellow, colorClass: STAGE_COLORS.Yellow.bg, colorHex: STAGE_COLORS.Yellow.hex };
   }
   if (sales >= ranges.Blue.min && sales <= (ranges.Blue.max ?? Infinity)) {
-    return { stage: 'Blue', incentive: INCENTIVES.Blue, color: 'bg-blue-500' };
+    return { stage: 'Blue', incentive: INCENTIVES.Blue, colorClass: STAGE_COLORS.Blue.bg, colorHex: STAGE_COLORS.Blue.hex };
   }
-  return { stage: 'Red', incentive: INCENTIVES.Red, color: 'bg-red-500' };
+  return { stage: 'Red', incentive: INCENTIVES.Red, colorClass: STAGE_COLORS.Red.bg, colorHex: STAGE_COLORS.Red.hex };
 }
 
-export function formatCurrency(amount: number) {
+export function formatCurrency(amount: number, minimumFractionDigits = 0, maximumFractionDigits = 0) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(amount);
 }
 
 export function getProgress(current: number, target: number): number {
   if (target === 0) return 0;
-  return Math.min(Math.round((current / target) * 100), 100);
+  // Allow progress to go beyond 100%
+  return Math.round((current / target) * 100);
 }

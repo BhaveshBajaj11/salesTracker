@@ -1,13 +1,13 @@
 
 import { Suspense } from 'react';
 import ReportDisplay from '@/components/report-display';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function LoadingReport() {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-2xl">
+            <Card className="w-full max-w-md">
                 <CardHeader>
                     <Skeleton className="h-8 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
@@ -42,8 +42,12 @@ function LoadingReport() {
 
 export default function ReportPage() {
   return (
-    <Suspense fallback={<LoadingReport />}>
-      <ReportDisplay />
-    </Suspense>
+    <div className="container mx-auto p-4 md:py-8 flex justify-center">
+      <div className="w-full max-w-md">
+        <Suspense fallback={<LoadingReport />}>
+          <ReportDisplay />
+        </Suspense>
+      </div>
+    </div>
   );
 }
