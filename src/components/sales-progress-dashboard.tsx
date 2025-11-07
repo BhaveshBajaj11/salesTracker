@@ -43,7 +43,7 @@ export default function SalesProgressDashboard() {
   const searchParams = useSearchParams();
 
   const [currentSales, setCurrentSales] = useState(0);
-  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildRangesString(new URLSearchParams())));
+  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildRangesString(new URLSearchParams(searchParams.toString()))));
   const [userName, setUserName] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
@@ -72,11 +72,6 @@ export default function SalesProgressDashboard() {
   }, [incentiveDetails.stage, handleConfetti]);
   
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const sales = getSalesFromParams(params);
-    setCurrentSales(sales);
-    setUserName(getUserNameFromParams(params));
-
     const handleResize = () => {
       if (typeof window !== 'undefined') {
         setWindowSize({
@@ -96,7 +91,7 @@ export default function SalesProgressDashboard() {
         window.removeEventListener('resize', handleResize);
       }
     }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
