@@ -46,7 +46,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges, la
           <div className="absolute top-0 left-0 w-full h-full">
             {allMarkers.map((marker, index) => {
               if (marker.value === null) return null;
-              if (currentSales >= marker.value) return null;
+              if (currentSales >= marker.value && marker.stage !== 'Yellow') return null;
               const markerPosition = getProgress(marker.value, salesTarget);
               if (markerPosition > 100) return null;
               const stageDetail = stageDetails[marker.stage];
