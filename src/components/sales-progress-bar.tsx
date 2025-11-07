@@ -11,6 +11,13 @@ const stageDetails: { [key: string]: { color: string; markerColor: string; } } =
   Green: { color: 'bg-green-500', markerColor: '#22c55e' },
 };
 
+type SalesProgressBarProps = {
+    currentSales: number;
+    salesTarget: number;
+    ranges: StageRanges;
+};
+
+
 export default function SalesProgressBar({ currentSales, salesTarget, ranges }: SalesProgressBarProps) {
   const progress = getProgress(currentSales, salesTarget);
   const incentiveDetails = getStageForSales(currentSales, ranges);
@@ -21,10 +28,12 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
     { value: ranges.Green.min, stage: 'Green' },
   ];
 
+  const targetLabelPosition = progress > 90 ? 'left-[90%]' : 'right-0';
+
   return (
     <TooltipProvider>
-      <div className="w-full px-4">
-        <div className="relative h-10 w-[320px] mx-auto rounded-full bg-muted mt-10 border-2 border-gray-200">
+      <div className="w-full">
+        <div className="relative h-10 w-full mx-auto rounded-full bg-muted mt-10 border-2 border-gray-200">
           {/* Progress Fill */}
           <div
             className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
@@ -58,7 +67,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           })}
         </div>
 
-        <div className="relative mt-1 h-6 w-[320px] mx-auto">
+        <div className="relative mt-1 h-6 w-full mx-auto">
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <div
@@ -77,9 +86,9 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           </Tooltip>
         </div>
         
-        <div className="flex justify-between text-xs text-muted-foreground -mt-4 w-[320px] mx-auto">
-            <span>{formatCurrency(0, 0)}</span>
-            <span>{formatCurrency(salesTarget, 0)}</span>
+        <div className="relative -mt-4 w-full mx-auto text-xs text-muted-foreground">
+            <span className="absolute left-0">{formatCurrency(0, 0)}</span>
+            <span className={`absolute ${targetLabelPosition}`}>{formatCurrency(salesTarget, 0)}</span>
         </div>
       </div>
     </TooltipProvider>

@@ -52,12 +52,12 @@ export default function SalesProgressDashboard() {
         <CardHeader className="text-center bg-primary text-primary-foreground rounded-t-lg py-4">
           <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6 bg-card">
+        <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
           <div className="text-center">
             <p className="text-lg">Hi &lt;User Name&gt;</p>
           </div>
           
-          <div className="px-4">
+          <div className="">
              <label htmlFor="current-sales" className="sr-only">Current Sales</label>
              <Input
               id="current-sales"
@@ -72,7 +72,7 @@ export default function SalesProgressDashboard() {
 
           <SalesProgressBar currentSales={currentSales} salesTarget={salesTarget} ranges={stageRanges} />
           
-          <div className="text-center space-y-4 pt-4">
+          <div className="text-center space-y-4 pt-8">
               {incentiveDetails.stage === 'Green' ? (
                   <>
                       <p>Your Target for the day: <span className="font-bold">{formatCurrency(salesTarget)}</span></p>
