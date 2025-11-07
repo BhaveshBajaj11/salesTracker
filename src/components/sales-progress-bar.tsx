@@ -51,8 +51,8 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
             return (
               <div
                 key={index}
-                className="absolute top-0 -translate-y-1/2 -translate-x-1/2"
-                style={{ left: `${markerPosition}%`, top: '50%' }}
+                className="absolute top-0 -translate-x-1/2"
+                style={{ left: `${markerPosition}%` }}
               >
                 <div className="flex flex-col items-center">
                   <span className="text-xs font-semibold -mt-5">{formatCurrency(marker.value, 0)}</span>
