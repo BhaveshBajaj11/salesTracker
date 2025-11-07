@@ -27,7 +27,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
     { value: ranges.Red.max, label: 'Red End' },
     { value: ranges.Blue.max, label: 'Blue End' },
     { value: ranges.Yellow.max, label: 'Yellow End' },
-  ].filter(m => m.value !== null && m.value < salesTarget);
+  ].filter(m => m.value !== null && m.value < salesTarget && m.value > currentSales);
 
   return (
     <TooltipProvider>
