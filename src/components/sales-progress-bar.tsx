@@ -1,15 +1,8 @@
-
 'use client';
 
 import type { StageRanges } from '@/lib/types';
 import { formatCurrency, getProgress, getStageForSales } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-type SalesProgressBarProps = {
-  currentSales: number;
-  salesTarget: number;
-  ranges: StageRanges;
-};
 
 const stageDetails: { [key: string]: { color: string; markerColor: string; } } = {
   Red: { color: 'bg-red-500', markerColor: '#ef4444' },
@@ -31,7 +24,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
   return (
     <TooltipProvider>
       <div className="w-full px-4">
-        <div className="relative h-10 w-full rounded-full bg-muted mt-10 border-2 border-gray-200">
+        <div className="relative h-10 w-[320px] mx-auto rounded-full bg-muted mt-10 border-2 border-gray-200">
           {/* Progress Fill */}
           <div
             className={`h-full rounded-full transition-all duration-500 ${stageDetails[incentiveDetails.stage].color}`}
@@ -65,7 +58,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           })}
         </div>
 
-        <div className="relative mt-1 h-6">
+        <div className="relative mt-1 h-6 w-[320px] mx-auto">
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <div
@@ -84,7 +77,7 @@ export default function SalesProgressBar({ currentSales, salesTarget, ranges }: 
           </Tooltip>
         </div>
         
-        <div className="flex justify-between text-xs text-muted-foreground -mt-4">
+        <div className="flex justify-between text-xs text-muted-foreground -mt-4 w-[320px] mx-auto">
             <span>{formatCurrency(0, 0)}</span>
             <span>{formatCurrency(salesTarget, 0)}</span>
         </div>
