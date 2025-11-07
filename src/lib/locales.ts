@@ -15,7 +15,7 @@ export const locales = {
     enterYourSales: 'Enter your sales',
   },
   ta: {
-    title: 'வாவ் வெகுமதிகள்',
+    title: 'WoW Rewards',
     greeting: 'வணக்கம்',
     targetSales: 'இலக்கு விற்பனை',
     sales: 'விற்பனை',
