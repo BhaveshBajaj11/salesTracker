@@ -97,7 +97,7 @@ export default function SalesProgressDashboard() {
           <CardTitle className="text-2xl font-bold">WoW Rewards</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 pt-6 bg-card px-4 md:px-6">
-          <div className="text-center">
+          <div className="text-center mb-6">
             <p className="text-lg">Hi &lt;User Name&gt;</p>
           </div>
           
