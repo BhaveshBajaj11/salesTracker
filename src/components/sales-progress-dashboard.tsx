@@ -12,18 +12,19 @@ import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
 const buildInitialRangesString = (params: URLSearchParams): string => {
-  const blueRange = params.get('Blue') || "1300-1499";
-  const yellowRange = params.get('Yellow') || "1500-1699";
-  const greenRange = params.get('Green') || ">=1700";
+  const blueMin = parseInt(params.get('Blue') || "1300", 10);
+  const yellowMin = parseInt(params.get('Yellow') || "1500", 10);
+  const greenMin = parseInt(params.get('Green') || "1700", 10);
 
-  const blueMin = parseInt(blueRange.split('-')[0], 10);
   const redMax = blueMin > 0 ? blueMin - 1 : 0;
-  
+  const blueMax = yellowMin > 0 ? yellowMin - 1 : blueMin;
+  const yellowMax = greenMin > 0 ? greenMin - 1 : yellowMin;
+
   return JSON.stringify({
     Red: `0-${redMax}`,
-    Blue: blueRange,
-    Yellow: yellowRange,
-    Green: greenRange,
+    Blue: `${blueMin}-${blueMax}`,
+    Yellow: `${yellowMin}-${yellowMax}`,
+    Green: `>=${greenMin}`,
   });
 };
 
