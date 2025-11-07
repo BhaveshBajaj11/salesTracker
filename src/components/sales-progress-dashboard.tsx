@@ -29,6 +29,7 @@ export default function SalesProgressDashboard() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [isDebug, setIsDebug] = useState(false);
 
   const salesTarget = useMemo(() => {
     const greenMin = stageRanges.Green.min;
@@ -59,6 +60,7 @@ export default function SalesProgressDashboard() {
             params.set('sales', String(currentSales));
             router.replace(`?${params.toString()}`);
         }
+        setIsDebug(params.get('debug') === 'true');
     }
   }, [currentSales, handleConfetti, router]);
 
@@ -99,18 +101,20 @@ export default function SalesProgressDashboard() {
             <p className="text-lg">Hi &lt;User Name&gt;</p>
           </div>
           
-          <div className="">
-             <label htmlFor="current-sales" className="sr-only">Current Sales</label>
-             <Input
-              id="current-sales"
-              type="number"
-              value={currentSales}
-              onChange={(e) => setCurrentSales(Number(e.target.value))}
-              className="text-lg font-semibold text-center"
-              aria-label="Current Sales Input"
-              placeholder="Enter your sales"
-            />
-          </div>
+          {isDebug && (
+            <div className="">
+               <label htmlFor="current-sales" className="sr-only">Current Sales</label>
+               <Input
+                id="current-sales"
+                type="number"
+                value={currentSales}
+                onChange={(e) => setCurrentSales(Number(e.target.value))}
+                className="text-lg font-semibold text-center"
+                aria-label="Current Sales Input"
+                placeholder="Enter your sales"
+              />
+            </div>
+          )}
 
           <SalesProgressBar currentSales={currentSales} salesTarget={salesTarget} ranges={stageRanges} />
           
