@@ -11,7 +11,7 @@ import { parseStageRanges, getStageForSales, formatCurrency } from '@/lib/utils'
 import type { StageRanges, IncentiveDetails, Stage } from '@/lib/types';
 import SalesProgressBar from './sales-progress-bar';
 
-const buildInitialRangesString = (params: URLSearchParams): string => {
+const buildRangesString = (params: URLSearchParams): string => {
   const blueMin = parseInt(params.get('Blue') || "1300", 10);
   const yellowMin = parseInt(params.get('Yellow') || "1500", 10);
   const greenMin = parseInt(params.get('Green') || "1700", 10);
@@ -43,7 +43,7 @@ export default function SalesProgressDashboard() {
   const searchParams = useSearchParams();
 
   const [currentSales, setCurrentSales] = useState(0);
-  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildInitialRangesString(new URLSearchParams())));
+  const [stageRanges, setStageRanges] = useState<StageRanges>(() => parseStageRanges(buildRangesString(new URLSearchParams())));
   const [userName, setUserName] = useState('User');
   const [showConfetti, setShowConfetti] = useState(false);
   const [lastStage, setLastStage] = useState<Stage | null>(null);
@@ -80,7 +80,6 @@ export default function SalesProgressDashboard() {
 
         const params = new URLSearchParams(searchParams.toString());
         
-        // Update URL with current sales
         if (String(currentSales) !== params.get('sales')) {
             params.set('sales', String(currentSales));
             router.replace(`?${params.toString()}`, { scroll: false });
@@ -90,7 +89,7 @@ export default function SalesProgressDashboard() {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    setStageRanges(parseStageRanges(buildInitialRangesString(params)));
+    setStageRanges(parseStageRanges(buildRangesString(params)));
     setUserName(getUserNameFromParams(params));
     setCurrentSales(getSalesFromParams(params));
     setIsDebug(params.get('debug') === 'true');
